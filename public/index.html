@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Heart Rate Chart</title>  
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Heart Rate Chart</h1>
+    <div style="width: 80%;">
+        <canvas id="heartRateChart"></canvas>
+    </div>
+    <script>
+        
+        async function getHeartRateData(id) {
+            const response = await fetch(`/patient-heart-rate/${id}`);
+            const data = await response.json();
+            return data.heartRate;
+        }
+
+        
+        async function displayHeartRate(id) {
+            const heartRateData = await getHeartRateData(id);
+
+            const ctx = document.getElementById('heartRateChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Time 1', 'Time 2', 'Time 3'], // You can use real timestamps here
+                    datasets: [{
+                        label: 'Heart Rate (bpm)',
+                        data: heartRateData,
+                        borderColor: 'blue',
+                        borderWidth: 2,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        displayHeartRate(1);
+    </script>
+</body>
+</html>
