@@ -47,6 +47,7 @@
             <th>Heart Rate</th>
             <th>Body Temperature</th>
             <th>NID</th>
+            <th>Frequent_diseases</th>
         </tr>
         <tbody id="patientTable"></tbody>
     </table>
@@ -94,6 +95,7 @@
                     <td>${patient.heart_rate}</td>
                     <td>${patient.body_temp}</td>
                     <td>${patient.pat_nid}</td>
+                    <td>${patient.pat_freq_sickness}</td>
                 `;
                 patientTable.appendChild(row);
             });
