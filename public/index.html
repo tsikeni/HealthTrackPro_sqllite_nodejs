@@ -3,21 +3,60 @@
 <head>
     <title>Heart Rate Chart</title>  
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #333;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #fff;
+        }
+    </style>
 </head>
 <body>
     <h1>Heart Rate Chart</h1>
     <div style="width: 80%;">
         <canvas id="heartRateChart"></canvas>
     </div>
+
+    <h2>Patients List</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Heart Rate</th>
+            <th>Body Temperature</th>
+            <th>NID</th>
+        </tr>
+        <tbody id="patientTable"></tbody>
+    </table>
     <script>
-        
         async function getHeartRateData(id) {
             const response = await fetch(`/patient-heart-rate/${id}`);
             const data = await response.json();
             return data.heartRate;
         }
 
-        
         async function displayHeartRate(id) {
             const heartRateData = await getHeartRateData(id);
 
@@ -42,7 +81,24 @@
                     }
                 }
             });
+
+            // Fetch and display the patient list
+            const patientTable = document.getElementById('patientTable');
+            const response = await fetch('/pats');
+            const patients = await response.json();
+            patients.forEach(patient => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${patient.id}</td>
+                    <td>${patient.pat_name}</td>
+                    <td>${patient.heart_rate}</td>
+                    <td>${patient.body_temp}</td>
+                    <td>${patient.pat_nid}</td>
+                `;
+                patientTable.appendChild(row);
+            });
         }
+
         displayHeartRate(1);
     </script>
 </body>
