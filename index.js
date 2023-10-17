@@ -22,7 +22,7 @@ Patient.init({
     body_temp: DataTypes.FLOAT,
     pat_name: DataTypes.STRING,
     pat_nid: DataTypes.STRING,
-    pat_freq_sickness: DataTypes.INTEGER
+    pat_freq_sickness: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Patient', 
@@ -36,7 +36,7 @@ sequelize.sync();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static('public')); //serve static files like .html
+app.use(express.static('public')); 
 
 
 app.get('/pats', async (req, res) => {
@@ -60,10 +60,40 @@ app.get('/patient-heart-rate/:id', async (req, res) => {
   });
   
 
+
+
 app.post('/create/pat', async (req, res) => {
-  const user = await Patient.create(req.body);
-  res.json(user);
+  const { body_temp, heart_rate, pat_nid } = req.body;
+
+  if (
+    (body_temp >= 35 && body_temp <= 38) &&
+    (heart_rate >= 60 && heart_rate <= 90) &&
+    pat_nid.length === 16
+  ) {
+    const user = await Patient.create(req.body);
+    res.json(user);
+  } else {
+    let errorMessage = 'Invalid input.';
+
+    if (body_temp < 35 || body_temp > 38) {
+      errorMessage += ' Patient temperature should be between 35-38.';
+    }
+
+    if (heart_rate < 60 || heart_rate > 90) {
+      errorMessage += ' Heart rate should be between 60-90.';
+    }
+
+    if (pat_nid.length !== 16) {
+      errorMessage += ' NID should have exactly 16 characters.';
+    }
+
+    res.status(400).json({
+      message: errorMessage,
+    });
+  }
 });
+
+
 
 app.put('/pat/:id', async (req, res) => {
   const user = await Patient.findByPk(req.params.id);
